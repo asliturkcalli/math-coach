@@ -3,76 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matematik Koçluk & Haftalık Planlayıcı</title>
+    <title>Matematik Koçluk & Performans Analizi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;500;700&display=swap');
-        body { font-family: 'Fredoka', sans-serif; background: #fdfcf0; }
-        .grid-header { background: #3b82f6; color: white; padding: 10px; text-align: center; font-weight: bold; border-radius: 8px; }
-        .time-slot { height: 60px; border: 1px dashed #e2e8f0; position: relative; cursor: pointer; transition: 0.2s; background: white; }
-        .time-slot:hover { background: #f0f7ff; }
-        .task-chip { background: #fbbf24; color: #78350f; font-size: 11px; padding: 4px; border-radius: 4px; margin: 2px; position: absolute; width: 90%; z-index: 10; cursor: crosshair; }
-        .archive-card { background: white; border-left: 5px solid #10b981; padding: 10px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        body { font-family: 'Fredoka', sans-serif; background: #f8fafc; }
+        .grid-header { background: #3b82f6; color: white; padding: 8px; text-align: center; border-radius: 12px; font-size: 14px; }
+        .time-slot { height: 50px; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.3s; background: white; border-radius: 8px; position: relative; }
+        .time-slot:hover { background: #f1f5f9; border-color: #3b82f6; }
+        .task-chip { background: #3b82f6; color: white; font-size: 10px; padding: 4px; border-radius: 6px; margin: 2px; text-align: center; font-weight: bold; }
+        .signature { background: linear-gradient(to right, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
-<body class="p-2 md:p-6">
+<body class="p-4">
 
     <div class="max-w-7xl mx-auto">
-        <header class="flex justify-between items-center mb-6 bg-white p-4 rounded-2xl shadow-sm border-2 border-yellow-100">
+        <header class="flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-3xl shadow-sm mb-6 border border-blue-100">
             <div>
-                <h1 class="text-2xl font-bold text-blue-600">📅 Haftalık Ajanda & Koçluk</h1>
-                <p class="text-sm text-gray-500 italic">Gelişim Odaklı Planlama Sistemi</p>
+                <h1 class="text-3xl font-bold signature">🚀 Matematik Koçluk Paneli</h1>
+                <p class="text-gray-500 font-medium tracking-wide">Bu platform <strong>Aslıtürk Çallı </strong> tarafından  geliştirilmiştir.</p>
             </div>
-            <button onclick="archiveWeek()" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-full font-bold shadow-lg transition-transform active:scale-95">
-                ✅ Haftayı Tamamla ve Arşivle
-            </button>
+            <div class="flex gap-3 mt-4 md:mt-0">
+                <button onclick="showStats()" class="bg-blue-100 text-blue-600 px-5 py-2 rounded-2xl font-bold hover:bg-blue-200 transition">📊 İstatistikleri Göster</button>
+                <button onclick="archiveWeek()" class="bg-green-500 text-white px-6 py-2 rounded-2xl font-bold shadow-lg hover:bg-green-600 transition">Haftayı Tamamla</button>
+            </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-            <div class="lg:col-span-1 bg-blue-50 p-5 rounded-2xl border-2 border-blue-200">
-                <h3 class="font-bold text-blue-800 mb-2">🤖 Koç Analizi</h3>
-                <p id="ai-msg" class="text-sm text-blue-600 italic">Bugün planında boşluklar var, matematik çalışmak için harika bir gün!</p>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+            <div class="bg-gradient-to-br from-blue-600 to-purple-700 p-6 rounded-3xl text-white shadow-xl">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-3xl">🤖</span>
+                    <h3 class="font-bold text-xl">AI Koç Analizi</h3>
+                </div>
+                <p id="ai-message" class="text-sm leading-relaxed opacity-90">
+                    Henüz analiz için yeterli veri yok. Görevlerini ekle ve çalışmaya başla, senin için performansı ölçeceğim!
+                </p>
+                <div class="mt-4 pt-4 border-t border-white/20">
+                    <span class="text-xs font-bold uppercase opacity-70">Sistem Durumu:</span>
+                    <p id="ai-status" class="text-xs font-mono">Öğrenci bekleniyor...</p>
+                </div>
             </div>
-            
-            <div class="lg:col-span-3 bg-white p-4 rounded-2xl shadow-xl overflow-x-auto">
-                <div class="grid grid-cols-8 gap-2 min-w-[800px]">
-                    <div class="pt-12">
-                        <div class="h-[60px] flex items-center justify-center text-xs text-gray-400 font-bold">08:00-10:00</div>
-                        <div class="h-[60px] flex items-center justify-center text-xs text-gray-400 font-bold">10:00-12:00</div>
-                        <div class="h-[60px] flex items-center justify-center text-xs text-gray-400 font-bold">12:00-14:00</div>
-                        <div class="h-[60px] flex items-center justify-center text-xs text-gray-400 font-bold">14:00-16:00</div>
-                        <div class="h-[60px] flex items-center justify-center text-xs text-gray-400 font-bold">16:00-18:00</div>
-                        <div class="h-[60px] flex items-center justify-center text-xs text-gray-400 font-bold">18:00-20:00</div>
-                        <div class="h-[60px] flex items-center justify-center text-xs text-gray-400 font-bold">20:00-22:00</div>
-                        <div class="h-[60px] flex items-center justify-center text-xs text-gray-400 font-bold">22:00-00:00</div>
-                    </div>
 
+            <div class="lg:col-span-3 bg-white p-5 rounded-3xl shadow-sm border border-gray-100 overflow-x-auto">
+                <div class="grid grid-cols-8 gap-2 min-w-[800px]">
+                    <div class="pt-10">
+                        <div class="h-[50px] flex items-center justify-center text-[10px] text-gray-400 font-bold">08:00-10:00</div>
+                        <div class="h-[50px] flex items-center justify-center text-[10px] text-gray-400 font-bold">10:00-12:00</div>
+                        <div class="h-[50px] flex items-center justify-center text-[10px] text-gray-400 font-bold">12:00-14:00</div>
+                        <div class="h-[50px] flex items-center justify-center text-[10px] text-gray-400 font-bold">14:00-16:00</div>
+                        <div class="h-[50px] flex items-center justify-center text-[10px] text-gray-400 font-bold">16:00-18:00</div>
+                        <div class="h-[50px] flex items-center justify-center text-[10px] text-gray-400 font-bold">18:00-20:00</div>
+                        <div class="h-[50px] flex items-center justify-center text-[10px] text-gray-400 font-bold">20:00-22:00</div>
+                        <div class="h-[50px] flex items-center justify-center text-[10px] text-gray-400 font-bold">22:00-00:00</div>
+                    </div>
                     <script>
                         const gunler = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
                         gunler.forEach(gun => {
-                            document.write(`
-                                <div>
-                                    <div class="grid-header mb-2 text-sm">${gun}</div>
-                                    ${[1,2,3,4,5,6,7,8].map(i => `<div onclick="addTask(this)" class="time-slot rounded-md" data-day="${gun}"></div>`).join('')}
-                                </div>
-                            `);
+                            document.write(`<div><div class="grid-header mb-2 uppercase tracking-tighter">${gun}</div>`);
+                            for(let i=0; i<8; i++) {
+                                document.write(`<div onclick="addTask(this)" class="time-slot" data-day="${gun}"></div>`);
+                            }
+                            document.write(`</div>`);
                         });
                     </script>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div class="bg-white p-6 rounded-2xl shadow-md border-b-8 border-orange-400">
-                <h3 class="text-xl font-bold text-orange-600 mb-4">📚 MEB Konu Takibi</h3>
-                <div id="mufredat-list" class="space-y-2 h-64 overflow-y-auto">
-                    </div>
+        <div id="stats-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl p-8 max-w-2xl w-full relative">
+                <button onclick="closeStats()" class="absolute top-4 right-4 text-2xl">✕</button>
+                <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">📈 Haftalık Performans Grafiği</h3>
+                <canvas id="performanceChart"></canvas>
             </div>
+        </div>
 
-            <div class="bg-gray-100 p-6 rounded-2xl border-2 border-dashed border-gray-300">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-orange-100">
+                <h3 class="text-xl font-bold text-orange-600 mb-4 flex items-center gap-2">📚 MEB Müfredat Takibi</h3>
+                <div id="mufredat-list" class="space-y-2 h-60 overflow-y-auto pr-2"></div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-200">
                 <h3 class="text-xl font-bold text-gray-600 mb-4">📂 Geçmiş Haftalar Deposu</h3>
-                <div id="archive-list" class="h-64 overflow-y-auto">
+                <div id="archive-list" class="h-60 overflow-y-auto space-y-3">
                     <p class="text-gray-400 text-sm italic">Henüz arşivlenmiş bir hafta yok.</p>
                 </div>
             </div>
@@ -80,61 +95,97 @@
     </div>
 
     <script>
-        // Görev Ekleme
+        let weeklyHistory = [0, 0, 0, 0, 0, 0, 0]; // Grafik için veri
+
         function addTask(el) {
-            const mevcutGorev = el.querySelector('.task-chip');
-            if (mevcutGorev) {
-                if(confirm("Bu görevi silmek mi istiyorsun?")) {
-                    mevcutGorev.remove();
-                }
+            const existing = el.querySelector('.task-chip');
+            if (existing) {
+                if(confirm("Bu görevi silmek mi istiyorsun?")) existing.remove();
                 return;
             }
-
-            const gorev = prompt("Bu saat dilimine ne planlıyorsun?");
+            const gorev = prompt("Görevi girin:");
             if(gorev) {
                 const chip = document.createElement('div');
-                chip.className = "task-chip shadow-sm overflow-hidden";
+                chip.className = "task-chip";
                 chip.innerText = gorev;
                 el.appendChild(chip);
                 confetti({ particleCount: 30, spread: 50, origin: { y: 0.8 } });
+                updateAI();
             }
         }
 
-        // Haftayı Arşivleme
-        function archiveWeek() {
-            const allTasks = document.querySelectorAll('.task-chip');
-            if(allTasks.length === 0) {
-                alert("Arşivlenecek bir görev bulamadım!");
-                return;
+        function updateAI() {
+            const count = document.querySelectorAll('.task-chip').length;
+            const msg = document.getElementById('ai-message');
+            const status = document.getElementById('ai-status');
+
+            if(count > 0 && count < 5) {
+                msg.innerText = "Isınma turları başladı! Planına birkaç matematik konusu daha eklemeye ne dersin?";
+                status.innerText = "Mod: Başlangıç Seviyesi";
+            } else if(count >= 5 && count < 15) {
+                msg.innerText = "Harika bir tempodasın! Bu görevleri tamamlarsan haftalık hedefine ulaşırsın. Odaklanmaya devam!";
+                status.innerText = "Mod: Verimli Çalışma";
+            } else if(count >= 15) {
+                msg.innerText = "İşte gerçek bir şampiyon! Planın çok yoğun, mola vermeyi unutma. Matematik canavarı iş başında!";
+                status.innerText = "Mod: Yüksek Performans";
             }
+        }
+
+        function archiveWeek() {
+            const count = document.querySelectorAll('.task-chip').length;
+            if(count === 0) return alert("Arşivlemek için en az bir görev olmalı!");
 
             const tarih = new Date().toLocaleDateString();
             const archiveList = document.getElementById('archive-list');
-            
-            // Eğer ilk arşivse temizle
             if(archiveList.querySelector('p')) archiveList.innerHTML = '';
 
             const card = document.createElement('div');
-            card.className = "archive-card";
-            card.innerHTML = `<strong>📅 ${tarih} Haftası</strong><br><span class="text-xs text-gray-500">${allTasks.length} görev tamamlandı.</span>`;
+            card.className = "p-4 bg-green-50 border border-green-200 rounded-2xl flex justify-between items-center";
+            card.innerHTML = `<div><b class="text-green-800">${tarih} Haftası</b><br><small>${count} görev tamamlandı.</small></div> <span class="text-xl">🏆</span>`;
             archiveList.prepend(card);
 
-            // Planlayıcıyı temizle
-            allTasks.forEach(t => t.remove());
-            alert("Harika! Bu haftanın verileri depoya kaldırıldı. Yeni bir haftaya hazır mısın?");
-            document.getElementById('ai-msg').innerText = "Vay canına! Geçen hafta çok verimliydin. Haydi yeni hedefler koyalım!";
+            // Grafik verisini güncelle (Örnek rastgele gelişim)
+            weeklyHistory.shift();
+            weeklyHistory.push(count);
+
+            document.querySelectorAll('.task-chip').forEach(t => t.remove());
+            alert("Haftalık veriler başarıyla depoya kaldırıldı!");
         }
 
-        // Müfredat Yükleme
-        const konular = ["Mantık", "Kümeler", "Denklemler", "Üçgenler", "Veri Analizi", "Fonksiyonlar", "Polinomlar"];
+        function showStats() {
+            document.getElementById('stats-modal').classList.remove('hidden');
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            
+            if(window.myChart) window.myChart.destroy();
+            
+            window.myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['4 Hafta Önce', '3 Hafta Önce', '2 Hafta Önce', 'Geçen Hafta', 'Bu Hafta'],
+                    datasets: [{
+                        label: 'Tamamlanan Görev Sayısı',
+                        data: [...weeklyHistory.slice(-5)],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { display: false } } }
+            });
+        }
+
+        function closeStats() { document.getElementById('stats-modal').classList.add('hidden'); }
+
+        const konular = ["Mantık", "Kümeler", "Denklemler", "Üçgenler", "Veri Analizi", "Fonksiyonlar", "Polinomlar", "Trigonometri", "Türev", "İntegral"];
         const mList = document.getElementById('mufredat-list');
         konular.forEach(k => {
             const d = document.createElement('div');
-            d.className = "p-3 bg-white border rounded-lg cursor-pointer hover:bg-green-50 flex justify-between";
+            d.className = "p-3 bg-white border border-gray-100 rounded-xl cursor-pointer hover:bg-orange-50 flex justify-between text-sm font-medium";
             d.innerHTML = `<span>${k}</span>`;
             d.onclick = function() { 
-                this.classList.toggle('bg-green-200');
-                this.classList.toggle('border-green-500');
+                this.classList.toggle('bg-orange-100');
+                this.classList.toggle('border-orange-400');
             };
             mList.appendChild(d);
         });
