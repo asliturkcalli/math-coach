@@ -3,208 +3,263 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Koçluk Paneli | Matematik Özel Ders</title>
+    <title>Multi-Öğrenci Koçluk Paneli | Premium</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-        }
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.3); }
-        .grid-header { background: linear-gradient(90deg, #6366f1, #a855f7); color: white; padding: 12px; border-radius: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 12px; }
-        .time-slot { min-height: 80px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 16px; border: 2px dashed #e2e8f0; position: relative; }
-        .time-slot:hover { border-color: #6366f1; transform: translateY(-2px); background: rgba(99, 102, 241, 0.05); }
-        .task-card { animation: popIn 0.3s ease-out; border-radius: 12px; padding: 8px; font-size: 11px; font-weight: 600; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 4px; border-left: 4px solid #6366f1; background: white; }
-        .task-card.is-done { background: #dcfce7 !important; border-left-color: #22c55e !important; color: #166534; text-decoration: line-through; }
-        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .btn-fancy { transition: all 0.3s; background: linear-gradient(90deg, #6366f1, #a855f7); }
-        .btn-fancy:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; }
+        .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.4); }
+        .time-slot { min-height: 90px; border: 2px dashed #e2e8f0; border-radius: 16px; transition: 0.3s; }
+        .task-card { animation: popIn 0.3s ease; border-radius: 12px; padding: 10px; font-size: 11px; background: white; border-left: 4px solid #6366f1; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .is-done { background: #dcfce7 !important; border-left-color: #22c55e !important; text-decoration: line-through; opacity: 0.8; }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .student-active { border: 2px solid #6366f1; background: #eef2ff; }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto">
-        <header class="glass rounded-[32px] p-8 mb-8 flex flex-col md:flex-row justify-between items-center shadow-2xl">
-            <div class="text-center md:text-left">
-                <h1 class="text-4xl font-800 tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
-                    MATEMATİK AKADEMİSİ
+        <div class="glass rounded-3xl p-4 mb-6 flex flex-wrap items-center gap-4 shadow-xl">
+            <span class="font-bold text-gray-700 ml-2">👤 Öğrenci Değiştir:</span>
+            <div id="student-tabs" class="flex gap-2">
+                </div>
+            <button onclick="addNewStudent()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-indigo-700 transition">+ Yeni Öğrenci Ekle</button>
+        </div>
+
+        <header class="glass rounded-[32px] p-8 mb-8 flex flex-col md:row justify-between items-center shadow-2xl">
+            <div>
+                <h1 id="panel-title" class="text-4xl font-800 tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 uppercase">
+                    ÖĞRENCİ PANELİ
                 </h1>
-                <p class="text-gray-500 font-semibold mt-2">✨ Öğrenci Koçluk Portalı | <span class="text-indigo-600">Aslıtürk Çallı</span></p>
+                <p class="text-gray-500 font-semibold mt-2 italic">Koç: Aslıtürk Çallı | <span id="active-student-name" class="text-indigo-600 font-bold underline">Öğrenci Seçilmedi</span></p>
             </div>
-            <div class="flex gap-4 mt-6 md:mt-0">
-                <button onclick="showStats()" class="bg-white text-indigo-600 font-bold px-6 py-3 rounded-2xl shadow-sm hover:bg-indigo-50 transition">📊 Performans</button>
-                <button onclick="archiveWeek()" class="btn-fancy text-white font-bold px-8 py-3 rounded-2xl shadow-lg">Haftayı Bitir</button>
+            <div class="flex gap-3 mt-6 md:mt-0">
+                <button onclick="showStats()" class="bg-white text-indigo-600 font-bold px-6 py-3 rounded-2xl hover:shadow-lg transition">📊 Analiz</button>
+                <button onclick="archiveWeek()" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold px-8 py-3 rounded-2xl shadow-lg hover:scale-105 transition">Haftayı Bitir</button>
             </div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <div class="lg:col-span-3 space-y-8">
+            <div class="lg:col-span-3 space-y-6">
                 <div class="glass p-6 rounded-[24px] shadow-lg border-b-4 border-indigo-500">
-                    <div class="flex items-center gap-3 mb-4 text-indigo-600">
-                        <span class="text-3xl">🤖</span>
-                        <h3 class="font-bold text-lg">Zeki Asistan</h3>
-                    </div>
-                    <p id="ai-text" class="text-sm text-gray-600 leading-relaxed italic">Bugün harika işler çıkaracağız! Planını yapmaya ne dersin?</p>
+                    <h3 class="font-bold text-indigo-600 mb-2">🤖 Koç Yorumu</h3>
+                    <p id="ai-text" class="text-sm text-gray-600 leading-relaxed italic italic">Lütfen bir öğrenci seçin veya ekleyin.</p>
                 </div>
-
                 <div class="glass p-6 rounded-[24px] shadow-lg">
-                    <h3 class="font-bold text-gray-800 mb-4 flex items-center justify-between">
-                        Müfredat 📚
-                        <span class="text-[10px] bg-green-100 text-green-600 px-2 py-1 rounded-full">MEB 2026</span>
-                    </h3>
-                    <div id="mufredat" class="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar"></div>
+                    <h3 class="font-bold mb-4 border-b pb-2 text-gray-700">Müfredat Takibi</h3>
+                    <div id="mufredat" class="space-y-2 max-h-[300px] overflow-y-auto"></div>
                 </div>
             </div>
 
             <div class="lg:col-span-9 glass p-6 rounded-[32px] shadow-2xl overflow-x-auto">
-                <div class="grid grid-cols-8 gap-4 min-w-[1000px]">
-                    <div class="pt-16 space-y-[64px] text-center">
-                        <div class="text-[10px] font-extrabold text-gray-400">08:00</div>
-                        <div class="text-[10px] font-extrabold text-gray-400">11:00</div>
-                        <div class="text-[10px] font-extrabold text-gray-400">14:00</div>
-                        <div class="text-[10px] font-extrabold text-gray-400">17:00</div>
-                        <div class="text-[10px] font-extrabold text-gray-400">20:00</div>
+                <div id="calendar-grid" class="grid grid-cols-8 gap-4 min-w-[1000px]">
+                    <div class="pt-16 space-y-12 text-center text-[10px] font-bold text-gray-400 uppercase">
+                        <div>08:00</div><div>12:00</div><div>16:00</div><div>20:00</div><div>00:00</div>
                     </div>
-                    <script>
-                        const gunler = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
-                        gunler.forEach(gun => {
-                            document.write(`<div><div class="grid-header mb-4 shadow-md text-center">${gun}</div>`);
-                            for(let i=0; i<6; i++) {
-                                document.write(`<div class="time-slot p-2 mb-4 flex flex-col gap-1" data-day="${gun}">
-                                    <button onclick="manageTask(this.parentElement)" class="text-gray-300 hover:text-indigo-500 font-bold text-xl">+</button>
-                                </div>`);
-                            }
-                            document.write(`</div>`);
-                        });
-                    </script>
-                </div>
+                    </div>
             </div>
         </div>
 
-        <div class="mt-12 glass p-8 rounded-[32px]">
-            <h3 class="text-xl font-bold text-gray-700 mb-6 flex items-center gap-2">📂 Geçmiş Başarılar Deposu</h3>
+        <div class="mt-12 glass p-8 rounded-[32px] mb-20">
+            <h3 class="text-xl font-bold text-gray-700 mb-6">📂 Geçmiş Başarı Arşivi</h3>
             <div id="archive-list" class="grid grid-cols-1 md:grid-cols-4 gap-4"></div>
         </div>
     </div>
 
-    <div id="stats-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-[32px] p-8 max-w-3xl w-full shadow-2xl scale-in">
-            <div class="flex justify-between items-center mb-8">
-                <h3 class="text-2xl font-extrabold text-gray-800 tracking-tight">Haftalık Performans Analizi</h3>
-                <button onclick="closeStats()" class="text-gray-400 hover:text-red-500 text-3xl transition">×</button>
+    <div id="stats-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-[32px] p-8 max-w-3xl w-full">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="stats-title" class="text-2xl font-bold">Performans Grafiği</h3>
+                <button onclick="closeStats()" class="text-3xl">×</button>
             </div>
             <canvas id="performanceChart"></canvas>
         </div>
     </div>
 
     <script>
-        let archiveData = [];
+        let currentStudent = "";
+        let studentsData = JSON.parse(localStorage.getItem('kocluk_data')) || {};
 
-        function manageTask(parent) {
-            const existingTask = parent.querySelector('.task-card');
-            
-            if (!existingTask) {
-                const text = prompt("Yeni Görev:");
-                if (text) {
-                    const card = document.createElement('div');
-                    card.className = "task-card group relative";
-                    card.innerHTML = `
-                        <div class="task-text">${text}</div>
-                        <div class="mt-2 flex gap-1">
-                            <button onclick="toggleTaskStatus(this.closest('.task-card'))" class="bg-green-500 text-white px-2 py-1 rounded text-[8px] uppercase">Tik</button>
-                            <button onclick="editTask(this.closest('.task-card'))" class="bg-blue-400 text-white px-2 py-1 rounded text-[8px] uppercase">Düzelt</button>
-                            <button onclick="this.closest('.task-card').remove(); updateAI();" class="bg-red-400 text-white px-2 py-1 rounded text-[8px] uppercase">Sil</button>
-                        </div>
-                    `;
-                    parent.appendChild(card);
-                    updateAI();
-                }
+        function init() {
+            renderStudentTabs();
+            renderCalendar();
+            loadMufredat();
+        }
+
+        function renderStudentTabs() {
+            const container = document.getElementById('student-tabs');
+            container.innerHTML = "";
+            Object.keys(studentsData).forEach(name => {
+                const btn = document.createElement('button');
+                btn.className = `px-4 py-2 rounded-xl text-sm font-bold transition ${currentStudent === name ? 'student-active text-indigo-700' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`;
+                btn.innerText = name;
+                btn.onclick = () => switchStudent(name);
+                container.appendChild(btn);
+            });
+        }
+
+        function addNewStudent() {
+            const name = prompt("Öğrenci Adı Soyadı:");
+            if (name && !studentsData[name]) {
+                studentsData[name] = { tasks: [], archive: [] };
+                saveData();
+                switchStudent(name);
             }
         }
 
-        function toggleTaskStatus(card) {
-            card.classList.toggle('is-done');
-            if (card.classList.contains('is-done')) {
-                confetti({ particleCount: 60, spread: 80, origin: { y: 0.7 } });
-            }
+        function switchStudent(name) {
+            currentStudent = name;
+            document.getElementById('active-student-name').innerText = name;
+            renderStudentTabs();
+            renderCalendar(); // Takvimi o öğrenciye göre temizle/doldur
+            loadTasks();
+            loadArchive();
             updateAI();
         }
 
-        function editTask(card) {
-            const newText = prompt("Görevi Düzenle:", card.querySelector('.task-text').innerText);
-            if (newText) card.querySelector('.task-text').innerText = newText;
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            const timeCol = grid.firstElementChild;
+            grid.innerHTML = "";
+            grid.appendChild(timeCol);
+
+            const gunler = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
+            gunler.forEach(gun => {
+                const col = document.createElement('div');
+                col.innerHTML = `<div class="bg-indigo-500 text-white p-3 rounded-xl mb-4 text-center text-xs font-bold">${gun}</div>`;
+                for(let i=0; i<6; i++) {
+                    const slot = document.createElement('div');
+                    slot.className = "time-slot p-2 mb-4 cursor-pointer";
+                    slot.setAttribute('data-day', gun);
+                    slot.setAttribute('data-slot', i);
+                    slot.onclick = (e) => { if(e.target === slot) manageTask(slot); };
+                    col.appendChild(slot);
+                }
+                grid.appendChild(col);
+            });
         }
 
-        function updateAI() {
-            const total = document.querySelectorAll('.task-card').length;
-            const done = document.querySelectorAll('.is-done').length;
-            const text = document.getElementById('ai-text');
-            
-            if (total === 0) { text.innerText = "Seni bekliyorum, haydi bir plan yapalım!"; return; }
-            const ratio = (done/total) * 100;
-            
-            if (ratio > 80) text.innerText = "Mükemmel! Bu disiplinle hedeflerine çok yaklaştın. 🔥";
-            else if (ratio > 40) text.innerText = "Gayet iyi gidiyorsun, biraz daha odaklanırsak her şey tamam! 💪";
-            else text.innerText = "Yavaş yavaş başlıyoruz, önemli olan istikrarı bozmamak. 🚀";
+        function manageTask(parent) {
+            if(!currentStudent) return alert("Önce öğrenci seçin!");
+            const text = prompt("Görev Girin:");
+            if(text) {
+                const taskId = Date.now();
+                const taskObj = { id: taskId, text: text, done: false, day: parent.dataset.day, slot: parent.dataset.slot };
+                studentsData[currentStudent].tasks.push(taskObj);
+                saveData();
+                renderTask(parent, taskObj);
+            }
+        }
+
+        function renderTask(parent, taskObj) {
+            const card = document.createElement('div');
+            card.className = `task-card mt-2 ${taskObj.done ? 'is-done' : ''}`;
+            card.id = `task-${taskObj.id}`;
+            card.innerHTML = `
+                <div class="font-bold mb-2">${taskObj.text}</div>
+                <div class="flex gap-1">
+                    <button onclick="toggleTask(${taskObj.id})" class="bg-green-500 text-white px-2 py-1 rounded text-[8px]">TİK</button>
+                    <button onclick="deleteTask(${taskObj.id})" class="bg-red-400 text-white px-2 py-1 rounded text-[8px]">SİL</button>
+                </div>
+            `;
+            parent.appendChild(card);
+        }
+
+        function toggleTask(id) {
+            const task = studentsData[currentStudent].tasks.find(t => t.id === id);
+            task.done = !task.done;
+            saveData();
+            if(task.done) confetti({ particleCount: 50, origin: { y: 0.8 } });
+            switchStudent(currentStudent);
+        }
+
+        function deleteTask(id) {
+            studentsData[currentStudent].tasks = studentsData[currentStudent].tasks.filter(t => t.id !== id);
+            saveData();
+            switchStudent(currentStudent);
+        }
+
+        function loadTasks() {
+            if(!currentStudent) return;
+            studentsData[currentStudent].tasks.forEach(t => {
+                const slot = document.querySelector(`[data-day="${t.day}"][data-slot="${t.slot}"]`);
+                if(slot) renderTask(slot, t);
+            });
         }
 
         function archiveWeek() {
-            const total = document.querySelectorAll('.task-card').length;
-            const done = document.querySelectorAll('.is-done').length;
-            if (total === 0) return;
-
-            const score = Math.round((done/total) * 100);
-            archiveData.push(score);
-            
-            const card = document.createElement('div');
-            card.className = "glass p-4 rounded-2xl flex justify-between items-center border-l-4 border-green-500";
-            card.innerHTML = `<div><p class="text-xs font-bold">${new Date().toLocaleDateString()}</p><p class="text-lg font-extrabold text-green-600">%${score}</p></div>
-                              <button onclick="this.parentElement.remove()" class="text-red-300 hover:text-red-500">🗑️</button>`;
-            document.getElementById('archive-list').prepend(card);
-            
-            document.querySelectorAll('.task-card').forEach(t => t.remove());
-            updateAI();
-            alert("Harika bir hafta bitti! Veriler depolandı.");
+            const student = studentsData[currentStudent];
+            if(!student.tasks.length) return;
+            const done = student.tasks.filter(t => t.done).length;
+            const score = Math.round((done / student.tasks.length) * 100);
+            student.archive.push({ date: new Date().toLocaleDateString(), score: score });
+            student.tasks = [];
+            saveData();
+            switchStudent(currentStudent);
+            alert("Haftalık rapor arşive eklendi!");
         }
 
+        function loadArchive() {
+            const list = document.getElementById('archive-list');
+            list.innerHTML = "";
+            if(!currentStudent) return;
+            studentsData[currentStudent].archive.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = "glass p-4 rounded-2xl flex justify-between items-center border-l-4 border-indigo-500";
+                div.innerHTML = `<div><p class="text-[10px] font-bold">${item.date}</p><p class="text-lg font-extrabold text-indigo-600">%${item.score}</p></div>
+                                 <button onclick="deleteArchive(${index})" class="text-red-300 hover:text-red-500">🗑️</button>`;
+                list.prepend(div);
+            });
+        }
+
+        function deleteArchive(index) {
+            studentsData[currentStudent].archive.splice(index, 1);
+            saveData();
+            loadArchive();
+        }
+
+        function saveData() { localStorage.setItem('kocluk_data', JSON.stringify(studentsData)); }
+
         function showStats() {
+            if(!currentStudent) return;
             document.getElementById('stats-modal').classList.remove('hidden');
             const ctx = document.getElementById('performanceChart').getContext('2d');
+            const scores = studentsData[currentStudent].archive.map(a => a.score);
             if(window.myChart) window.myChart.destroy();
             window.myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: archiveData.map((_, i) => (i+1) + ". Hafta"),
-                    datasets: [{
-                        label: 'Başarı Oranı %',
-                        data: archiveData,
-                        borderColor: '#6366f1',
-                        borderWidth: 4,
-                        pointBackgroundColor: '#fff',
-                        pointBorderWidth: 3,
-                        tension: 0.4,
-                        fill: true,
-                        backgroundColor: 'rgba(99, 102, 241, 0.1)'
-                    }]
-                },
-                options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } }
+                    labels: scores.map((_, i) => (i+1) + ". Hafta"),
+                    datasets: [{ label: 'Başarı %', data: scores, borderColor: '#6366f1', tension: 0.4, fill: true, backgroundColor: 'rgba(99, 102, 241, 0.1)' }]
+                }
             });
         }
 
         function closeStats() { document.getElementById('stats-modal').classList.add('hidden'); }
 
-        const konular = ["Mantık", "Kümeler", "Denklemler", "Fonksiyonlar", "Polinomlar", "Trigonometri", "Türev", "İntegral"];
-        konular.forEach(k => {
-            const div = document.createElement('div');
-            div.className = "p-3 bg-white/50 rounded-xl mb-2 text-xs font-bold cursor-pointer hover:bg-indigo-100 transition";
-            div.innerText = k;
-            div.onclick = function() { this.classList.toggle('bg-green-200'); this.classList.toggle('line-through'); };
-            document.getElementById('mufredat').appendChild(div);
-        });
+        function updateAI() {
+            const text = document.getElementById('ai-text');
+            if(!currentStudent) { text.innerText = "Lütfen bir öğrenci seçin."; return; }
+            const tasks = studentsData[currentStudent].tasks;
+            const done = tasks.filter(t => t.done).length;
+            if(!tasks.length) text.innerText = `${currentStudent} için henüz plan yapılmadı.`;
+            else text.innerText = `${currentStudent} şu an %${Math.round((done/tasks.length)*100)} başarıyla ilerliyor.`;
+        }
+
+        function loadMufredat() {
+            const k = ["Mantık", "Kümeler", "Denklemler", "Üçgenler", "Fonksiyonlar", "Polinomlar"];
+            k.forEach(item => {
+                const d = document.createElement('div');
+                d.className = "p-2 bg-white/50 rounded-lg mb-2 text-xs font-bold cursor-pointer hover:bg-indigo-100";
+                d.innerText = item;
+                d.onclick = function() { this.classList.toggle('line-through'); this.classList.toggle('opacity-50'); };
+                document.getElementById('mufredat').appendChild(d);
+            });
+        }
+
+        init();
     </script>
 </body>
 </html>
