@@ -3,65 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matematik Koçluk | Profesyonel Takip Paneli</title>
+    <title>Premium Koçluk Paneli | Matematik Özel Ders</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;500;700&display=swap');
-        body { font-family: 'Fredoka', sans-serif; background: #fdfdfd; }
-        .grid-header { background: #4f46e5; color: white; padding: 10px; text-align: center; border-radius: 12px; font-size: 13px; font-weight: 600; }
-        .time-slot { min-height: 65px; border: 1px solid #e5e7eb; transition: 0.2s; background: white; border-radius: 10px; padding: 4px; position: relative; }
-        .time-slot:hover { border-color: #4f46e5; background: #f5f3ff; }
-        .task-item { font-size: 11px; padding: 6px; border-radius: 8px; margin-bottom: 4px; cursor: pointer; display: flex; align-items: center; gap: 4px; border: 1px solid #ddd; font-weight: 500; }
-        .done { background: #dcfce7 !important; color: #166534 !important; border-color: #22c55e !important; text-decoration: line-through; }
-        .signature-text { background: linear-gradient(90deg, #4f46e5, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.3); }
+        .grid-header { background: linear-gradient(90deg, #6366f1, #a855f7); color: white; padding: 12px; border-radius: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 12px; }
+        .time-slot { min-height: 80px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 16px; border: 2px dashed #e2e8f0; position: relative; }
+        .time-slot:hover { border-color: #6366f1; transform: translateY(-2px); background: rgba(99, 102, 241, 0.05); }
+        .task-card { animation: popIn 0.3s ease-out; border-radius: 12px; padding: 8px; font-size: 11px; font-weight: 600; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 4px; border-left: 4px solid #6366f1; background: white; }
+        .task-card.is-done { background: #dcfce7 !important; border-left-color: #22c55e !important; color: #166534; text-decoration: line-through; }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .btn-fancy { transition: all 0.3s; background: linear-gradient(90deg, #6366f1, #a855f7); }
+        .btn-fancy:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4); }
     </style>
 </head>
-<body class="p-3 md:p-6">
+<body class="p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto">
-        <header class="flex flex-col md:row justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-6">
+        <header class="glass rounded-[32px] p-8 mb-8 flex flex-col md:flex-row justify-between items-center shadow-2xl">
             <div class="text-center md:text-left">
-                <h1 class="text-3xl font-bold signature-text italic underline">Koçluk & Planlama Sistemi</h1>
-                <p class="text-gray-400 text-sm mt-1 font-medium">Geliştirici: <b>Aslıtürk Çallı</b> | Matematik Özel Ders</p>
+                <h1 class="text-4xl font-800 tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
+                    MATEMATİK AKADEMİSİ
+                </h1>
+                <p class="text-gray-500 font-semibold mt-2">✨ Öğrenci Koçluk Portalı | <span class="text-indigo-600">Aslıtürk Çallı</span></p>
             </div>
-            <div class="flex gap-2 mt-4">
-                <button onclick="showStats()" class="bg-indigo-50 text-indigo-600 px-5 py-2 rounded-xl font-bold hover:bg-indigo-100 transition">📊 Analiz</button>
-                <button onclick="archiveWeek()" class="bg-indigo-600 text-white px-5 py-2 rounded-xl font-bold shadow-lg hover:bg-indigo-700 transition">Haftayı Arşivle</button>
+            <div class="flex gap-4 mt-6 md:mt-0">
+                <button onclick="showStats()" class="bg-white text-indigo-600 font-bold px-6 py-3 rounded-2xl shadow-sm hover:bg-indigo-50 transition">📊 Performans</button>
+                <button onclick="archiveWeek()" class="btn-fancy text-white font-bold px-8 py-3 rounded-2xl shadow-lg">Haftayı Bitir</button>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            <div class="lg:col-span-1 space-y-6">
-                <div class="bg-indigo-900 p-6 rounded-3xl text-white shadow-2xl relative overflow-hidden">
-                    <div class="relative z-10">
-                        <div class="flex items-center gap-2 mb-3">
-                            <span class="text-2xl">🤖</span>
-                            <h3 class="font-bold">Zeki Koç Analizi</h3>
-                        </div>
-                        <p id="ai-text" class="text-sm opacity-80 italic">Öğrenci ödevlerini yapmaya başladığında buradaki rapor güncellenecek.</p>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-3 space-y-8">
+                <div class="glass p-6 rounded-[24px] shadow-lg border-b-4 border-indigo-500">
+                    <div class="flex items-center gap-3 mb-4 text-indigo-600">
+                        <span class="text-3xl">🤖</span>
+                        <h3 class="font-bold text-lg">Zeki Asistan</h3>
                     </div>
-                    <div class="absolute -right-4 -bottom-4 text-white/5 text-8xl font-bold">AI</div>
+                    <p id="ai-text" class="text-sm text-gray-600 leading-relaxed italic">Bugün harika işler çıkaracağız! Planını yapmaya ne dersin?</p>
                 </div>
 
-                <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
-                    <h3 class="font-bold text-gray-700 mb-3 border-b pb-2">📚 Müfredat Takibi</h3>
-                    <div id="mufredat" class="space-y-2 h-48 overflow-y-auto pr-2 text-sm"></div>
+                <div class="glass p-6 rounded-[24px] shadow-lg">
+                    <h3 class="font-bold text-gray-800 mb-4 flex items-center justify-between">
+                        Müfredat 📚
+                        <span class="text-[10px] bg-green-100 text-green-600 px-2 py-1 rounded-full">MEB 2026</span>
+                    </h3>
+                    <div id="mufredat" class="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar"></div>
                 </div>
             </div>
 
-            <div class="lg:col-span-3 bg-white p-4 rounded-3xl shadow-md border border-gray-100 overflow-x-auto">
-                <div class="grid grid-cols-8 gap-2 min-w-[900px]">
-                    <div class="pt-12 text-center text-[10px] font-bold text-gray-400 space-y-[45px]">
-                        <div>08:00</div><div>10:00</div><div>12:00</div><div>14:00</div><div>16:00</div><div>18:00</div><div>20:00</div><div>22:00</div>
+            <div class="lg:col-span-9 glass p-6 rounded-[32px] shadow-2xl overflow-x-auto">
+                <div class="grid grid-cols-8 gap-4 min-w-[1000px]">
+                    <div class="pt-16 space-y-[64px] text-center">
+                        <div class="text-[10px] font-extrabold text-gray-400">08:00</div>
+                        <div class="text-[10px] font-extrabold text-gray-400">11:00</div>
+                        <div class="text-[10px] font-extrabold text-gray-400">14:00</div>
+                        <div class="text-[10px] font-extrabold text-gray-400">17:00</div>
+                        <div class="text-[10px] font-extrabold text-gray-400">20:00</div>
                     </div>
                     <script>
                         const gunler = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
                         gunler.forEach(gun => {
-                            document.write(`<div><div class="grid-header mb-3 tracking-widest">${gun}</div>`);
-                            for(let i=0; i<8; i++) {
-                                document.write(`<div class="time-slot" data-day="${gun}"><button onclick="addTask(this)" class="w-full text-gray-300 text-xs hover:text-indigo-500">+</button></div>`);
+                            document.write(`<div><div class="grid-header mb-4 shadow-md text-center">${gun}</div>`);
+                            for(let i=0; i<6; i++) {
+                                document.write(`<div class="time-slot p-2 mb-4 flex flex-col gap-1" data-day="${gun}">
+                                    <button onclick="manageTask(this.parentElement)" class="text-gray-300 hover:text-indigo-500 font-bold text-xl">+</button>
+                                </div>`);
                             }
                             document.write(`</div>`);
                         });
@@ -70,79 +85,90 @@
             </div>
         </div>
 
-        <div class="mt-8 bg-gray-50 p-6 rounded-3xl border-2 border-dashed border-gray-200">
-            <h3 class="font-bold text-gray-500 mb-4 flex items-center gap-2">📂 Geçmiş Haftalar Deposu</h3>
-            <div id="archive-list" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+        <div class="mt-12 glass p-8 rounded-[32px]">
+            <h3 class="text-xl font-bold text-gray-700 mb-6 flex items-center gap-2">📂 Geçmiş Başarılar Deposu</h3>
+            <div id="archive-list" class="grid grid-cols-1 md:grid-cols-4 gap-4"></div>
         </div>
     </div>
 
-    <div id="stats-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl p-8 max-w-2xl w-full shadow-2xl">
-            <div class="flex justify-between mb-6">
-                <h3 class="text-xl font-bold">📈 Başarı Grafiği (%)</h3>
-                <button onclick="closeStats()" class="text-gray-400 hover:text-black text-2xl">✕</button>
+    <div id="stats-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-[32px] p-8 max-w-3xl w-full shadow-2xl scale-in">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-2xl font-extrabold text-gray-800 tracking-tight">Haftalık Performans Analizi</h3>
+                <button onclick="closeStats()" class="text-gray-400 hover:text-red-500 text-3xl transition">×</button>
             </div>
             <canvas id="performanceChart"></canvas>
-            <p class="text-xs text-center mt-4 text-gray-400 italic">Tik atma oranına göre haftalık verimlilik grafiği.</p>
         </div>
     </div>
 
     <script>
         let archiveData = [];
 
-        function addTask(parent) {
-            const gorev = prompt("Öğrenciye görev tanımlayın:");
-            if(gorev) {
-                const item = document.createElement('div');
-                item.className = "task-item bg-white shadow-sm";
-                item.innerHTML = `<input type="checkbox" onchange="toggleDone(this)" class="w-3 h-3"> <span>${gorev}</span>`;
-                parent.appendChild(item);
-                updateAI();
+        function manageTask(parent) {
+            const existingTask = parent.querySelector('.task-card');
+            
+            if (!existingTask) {
+                const text = prompt("Yeni Görev:");
+                if (text) {
+                    const card = document.createElement('div');
+                    card.className = "task-card group relative";
+                    card.innerHTML = `
+                        <div class="task-text">${text}</div>
+                        <div class="mt-2 flex gap-1">
+                            <button onclick="toggleTaskStatus(this.closest('.task-card'))" class="bg-green-500 text-white px-2 py-1 rounded text-[8px] uppercase">Tik</button>
+                            <button onclick="editTask(this.closest('.task-card'))" class="bg-blue-400 text-white px-2 py-1 rounded text-[8px] uppercase">Düzelt</button>
+                            <button onclick="this.closest('.task-card').remove(); updateAI();" class="bg-red-400 text-white px-2 py-1 rounded text-[8px] uppercase">Sil</button>
+                        </div>
+                    `;
+                    parent.appendChild(card);
+                    updateAI();
+                }
             }
         }
 
-        function toggleDone(cb) {
-            const parent = cb.parentElement;
-            if(cb.checked) {
-                parent.classList.add('done');
-                confetti({ particleCount: 40, spread: 70, origin: { y: 0.8 } });
-            } else {
-                parent.classList.remove('done');
+        function toggleTaskStatus(card) {
+            card.classList.toggle('is-done');
+            if (card.classList.contains('is-done')) {
+                confetti({ particleCount: 60, spread: 80, origin: { y: 0.7 } });
             }
             updateAI();
         }
 
-        function updateAI() {
-            const total = document.querySelectorAll('input[type="checkbox"]').length;
-            const done = document.querySelectorAll('input[type="checkbox"]:checked').length;
-            const msg = document.getElementById('ai-text');
-            
-            if(total === 0) return;
-            const ratio = (done / total) * 100;
+        function editTask(card) {
+            const newText = prompt("Görevi Düzenle:", card.querySelector('.task-text').innerText);
+            if (newText) card.querySelector('.task-text').innerText = newText;
+        }
 
-            if(ratio < 30) msg.innerText = "Henüz yolun başındayız. Küçük adımlarla başlayıp tempoyu artırmalıyız.";
-            else if(ratio < 70) msg.innerText = "Gayretin fark ediliyor! Planın yarısından fazlasını başardın, böyle devam.";
-            else msg.innerText = "Mükemmel performans! Tiklerin yeşilliği göz kamaştırıyor. Gerçek bir disiplin örneği!";
+        function updateAI() {
+            const total = document.querySelectorAll('.task-card').length;
+            const done = document.querySelectorAll('.is-done').length;
+            const text = document.getElementById('ai-text');
+            
+            if (total === 0) { text.innerText = "Seni bekliyorum, haydi bir plan yapalım!"; return; }
+            const ratio = (done/total) * 100;
+            
+            if (ratio > 80) text.innerText = "Mükemmel! Bu disiplinle hedeflerine çok yaklaştın. 🔥";
+            else if (ratio > 40) text.innerText = "Gayet iyi gidiyorsun, biraz daha odaklanırsak her şey tamam! 💪";
+            else text.innerText = "Yavaş yavaş başlıyoruz, önemli olan istikrarı bozmamak. 🚀";
         }
 
         function archiveWeek() {
-            const total = document.querySelectorAll('input[type="checkbox"]').length;
-            const done = document.querySelectorAll('input[type="checkbox"]:checked').length;
-            if(total === 0) return alert("Arşivlemek için plan oluşturun!");
+            const total = document.querySelectorAll('.task-card').length;
+            const done = document.querySelectorAll('.is-done').length;
+            if (total === 0) return;
 
-            const basari = Math.round((done / total) * 100);
-            const tarih = new Date().toLocaleDateString();
-            
-            archiveData.push(basari);
+            const score = Math.round((done/total) * 100);
+            archiveData.push(score);
             
             const card = document.createElement('div');
-            card.className = "bg-white p-4 rounded-2xl shadow-sm border border-gray-200 flex justify-between items-center";
-            card.innerHTML = `<div><p class="font-bold text-sm text-gray-700">${tarih} Haftası</p><p class="text-xs text-green-600 font-bold">%${basari} Başarı Oranı</p></div>
-                              <button onclick="this.parentElement.remove()" class="text-red-400 hover:text-red-600">🗑️</button>`;
+            card.className = "glass p-4 rounded-2xl flex justify-between items-center border-l-4 border-green-500";
+            card.innerHTML = `<div><p class="text-xs font-bold">${new Date().toLocaleDateString()}</p><p class="text-lg font-extrabold text-green-600">%${score}</p></div>
+                              <button onclick="this.parentElement.remove()" class="text-red-300 hover:text-red-500">🗑️</button>`;
             document.getElementById('archive-list').prepend(card);
-
-            document.querySelectorAll('.task-item').forEach(t => t.remove());
-            alert("Hafta arşive eklendi ve plan temizlendi.");
+            
+            document.querySelectorAll('.task-card').forEach(t => t.remove());
+            updateAI();
+            alert("Harika bir hafta bitti! Veriler depolandı.");
         }
 
         function showStats() {
@@ -154,27 +180,30 @@
                 data: {
                     labels: archiveData.map((_, i) => (i+1) + ". Hafta"),
                     datasets: [{
-                        label: 'Başarı Yüzdesi (%)',
+                        label: 'Başarı Oranı %',
                         data: archiveData,
-                        borderColor: '#4f46e5',
+                        borderColor: '#6366f1',
+                        borderWidth: 4,
+                        pointBackgroundColor: '#fff',
+                        pointBorderWidth: 3,
                         tension: 0.4,
                         fill: true,
-                        backgroundColor: 'rgba(79, 70, 229, 0.1)'
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)'
                     }]
-                }
+                },
+                options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } }
             });
         }
 
         function closeStats() { document.getElementById('stats-modal').classList.add('hidden'); }
 
-        // MEB Müfredat Örneği
-        const konular = ["Mantık", "Kümeler", "Sayı Sistemleri", "Bölünebilme", "Üçgenler", "Denklemler", "Veri"];
+        const konular = ["Mantık", "Kümeler", "Denklemler", "Fonksiyonlar", "Polinomlar", "Trigonometri", "Türev", "İntegral"];
         konular.forEach(k => {
-            const d = document.createElement('div');
-            d.className = "p-2 border rounded-lg cursor-pointer hover:bg-indigo-50";
-            d.innerText = k;
-            d.onclick = function() { this.classList.toggle('done'); };
-            document.getElementById('mufredat').appendChild(d);
+            const div = document.createElement('div');
+            div.className = "p-3 bg-white/50 rounded-xl mb-2 text-xs font-bold cursor-pointer hover:bg-indigo-100 transition";
+            div.innerText = k;
+            div.onclick = function() { this.classList.toggle('bg-green-200'); this.classList.toggle('line-through'); };
+            document.getElementById('mufredat').appendChild(div);
         });
     </script>
 </body>
