@@ -3,67 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matematik Koçluk & Performans Analizi</title>
+    <title>Matematik Koçluk | Profesyonel Takip Paneli</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;500;700&display=swap');
-        body { font-family: 'Fredoka', sans-serif; background: #f8fafc; }
-        .grid-header { background: #3b82f6; color: white; padding: 8px; text-align: center; border-radius: 12px; font-size: 14px; }
-        .time-slot { height: 50px; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.3s; background: white; border-radius: 8px; position: relative; }
-        .time-slot:hover { background: #f1f5f9; border-color: #3b82f6; }
-        .task-chip { background: #3b82f6; color: white; font-size: 10px; padding: 4px; border-radius: 6px; margin: 2px; text-align: center; font-weight: bold; }
-        .signature { background: linear-gradient(to right, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        body { font-family: 'Fredoka', sans-serif; background: #fdfdfd; }
+        .grid-header { background: #4f46e5; color: white; padding: 10px; text-align: center; border-radius: 12px; font-size: 13px; font-weight: 600; }
+        .time-slot { min-height: 65px; border: 1px solid #e5e7eb; transition: 0.2s; background: white; border-radius: 10px; padding: 4px; position: relative; }
+        .time-slot:hover { border-color: #4f46e5; background: #f5f3ff; }
+        .task-item { font-size: 11px; padding: 6px; border-radius: 8px; margin-bottom: 4px; cursor: pointer; display: flex; align-items: center; gap: 4px; border: 1px solid #ddd; font-weight: 500; }
+        .done { background: #dcfce7 !important; color: #166534 !important; border-color: #22c55e !important; text-decoration: line-through; }
+        .signature-text { background: linear-gradient(90deg, #4f46e5, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
-<body class="p-4">
+<body class="p-3 md:p-6">
 
     <div class="max-w-7xl mx-auto">
-        <header class="flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-3xl shadow-sm mb-6 border border-blue-100">
-            <div>
-                <h1 class="text-3xl font-bold signature">🚀 Matematik Koçluk Paneli</h1>
-                <p class="text-gray-500 font-medium tracking-wide">Bu platform <strong>Aslıtürk Çallı </strong> tarafından  geliştirilmiştir.</p>
+        <header class="flex flex-col md:row justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-6">
+            <div class="text-center md:text-left">
+                <h1 class="text-3xl font-bold signature-text italic underline">Koçluk & Planlama Sistemi</h1>
+                <p class="text-gray-400 text-sm mt-1 font-medium">Geliştirici: <b>Aslıtürk Çallı</b> | Matematik Özel Ders</p>
             </div>
-            <div class="flex gap-3 mt-4 md:mt-0">
-                <button onclick="showStats()" class="bg-blue-100 text-blue-600 px-5 py-2 rounded-2xl font-bold hover:bg-blue-200 transition">📊 İstatistikleri Göster</button>
-                <button onclick="archiveWeek()" class="bg-green-500 text-white px-6 py-2 rounded-2xl font-bold shadow-lg hover:bg-green-600 transition">Haftayı Tamamla</button>
+            <div class="flex gap-2 mt-4">
+                <button onclick="showStats()" class="bg-indigo-50 text-indigo-600 px-5 py-2 rounded-xl font-bold hover:bg-indigo-100 transition">📊 Analiz</button>
+                <button onclick="archiveWeek()" class="bg-indigo-600 text-white px-5 py-2 rounded-xl font-bold shadow-lg hover:bg-indigo-700 transition">Haftayı Arşivle</button>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
-            <div class="bg-gradient-to-br from-blue-600 to-purple-700 p-6 rounded-3xl text-white shadow-xl">
-                <div class="flex items-center gap-3 mb-4">
-                    <span class="text-3xl">🤖</span>
-                    <h3 class="font-bold text-xl">AI Koç Analizi</h3>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-indigo-900 p-6 rounded-3xl text-white shadow-2xl relative overflow-hidden">
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="text-2xl">🤖</span>
+                            <h3 class="font-bold">Zeki Koç Analizi</h3>
+                        </div>
+                        <p id="ai-text" class="text-sm opacity-80 italic">Öğrenci ödevlerini yapmaya başladığında buradaki rapor güncellenecek.</p>
+                    </div>
+                    <div class="absolute -right-4 -bottom-4 text-white/5 text-8xl font-bold">AI</div>
                 </div>
-                <p id="ai-message" class="text-sm leading-relaxed opacity-90">
-                    Henüz analiz için yeterli veri yok. Görevlerini ekle ve çalışmaya başla, senin için performansı ölçeceğim!
-                </p>
-                <div class="mt-4 pt-4 border-t border-white/20">
-                    <span class="text-xs font-bold uppercase opacity-70">Sistem Durumu:</span>
-                    <p id="ai-status" class="text-xs font-mono">Öğrenci bekleniyor...</p>
+
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
+                    <h3 class="font-bold text-gray-700 mb-3 border-b pb-2">📚 Müfredat Takibi</h3>
+                    <div id="mufredat" class="space-y-2 h-48 overflow-y-auto pr-2 text-sm"></div>
                 </div>
             </div>
 
-            <div class="lg:col-span-3 bg-white p-5 rounded-3xl shadow-sm border border-gray-100 overflow-x-auto">
-                <div class="grid grid-cols-8 gap-2 min-w-[800px]">
-                    <div class="pt-10">
-                        <div class="h-[50px] flex items-center justify-center text-[10px] text-gray-400 font-bold">08:00-10:00</div>
-                        <div class="h-[50px] flex items-center justify-center text-[10px] text-gray-400 font-bold">10:00-12:00</div>
-                        <div class="h-[50px] flex items-center justify-center text-[10px] text-gray-400 font-bold">12:00-14:00</div>
-                        <div class="h-[50px] flex items-center justify-center text-[10px] text-gray-400 font-bold">14:00-16:00</div>
-                        <div class="h-[50px] flex items-center justify-center text-[10px] text-gray-400 font-bold">16:00-18:00</div>
-                        <div class="h-[50px] flex items-center justify-center text-[10px] text-gray-400 font-bold">18:00-20:00</div>
-                        <div class="h-[50px] flex items-center justify-center text-[10px] text-gray-400 font-bold">20:00-22:00</div>
-                        <div class="h-[50px] flex items-center justify-center text-[10px] text-gray-400 font-bold">22:00-00:00</div>
+            <div class="lg:col-span-3 bg-white p-4 rounded-3xl shadow-md border border-gray-100 overflow-x-auto">
+                <div class="grid grid-cols-8 gap-2 min-w-[900px]">
+                    <div class="pt-12 text-center text-[10px] font-bold text-gray-400 space-y-[45px]">
+                        <div>08:00</div><div>10:00</div><div>12:00</div><div>14:00</div><div>16:00</div><div>18:00</div><div>20:00</div><div>22:00</div>
                     </div>
                     <script>
                         const gunler = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
                         gunler.forEach(gun => {
-                            document.write(`<div><div class="grid-header mb-2 uppercase tracking-tighter">${gun}</div>`);
+                            document.write(`<div><div class="grid-header mb-3 tracking-widest">${gun}</div>`);
                             for(let i=0; i<8; i++) {
-                                document.write(`<div onclick="addTask(this)" class="time-slot" data-day="${gun}"></div>`);
+                                document.write(`<div class="time-slot" data-day="${gun}"><button onclick="addTask(this)" class="w-full text-gray-300 text-xs hover:text-indigo-500">+</button></div>`);
                             }
                             document.write(`</div>`);
                         });
@@ -72,122 +70,111 @@
             </div>
         </div>
 
-        <div id="stats-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div class="bg-white rounded-3xl p-8 max-w-2xl w-full relative">
-                <button onclick="closeStats()" class="absolute top-4 right-4 text-2xl">✕</button>
-                <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">📈 Haftalık Performans Grafiği</h3>
-                <canvas id="performanceChart"></canvas>
-            </div>
+        <div class="mt-8 bg-gray-50 p-6 rounded-3xl border-2 border-dashed border-gray-200">
+            <h3 class="font-bold text-gray-500 mb-4 flex items-center gap-2">📂 Geçmiş Haftalar Deposu</h3>
+            <div id="archive-list" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
         </div>
+    </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-orange-100">
-                <h3 class="text-xl font-bold text-orange-600 mb-4 flex items-center gap-2">📚 MEB Müfredat Takibi</h3>
-                <div id="mufredat-list" class="space-y-2 h-60 overflow-y-auto pr-2"></div>
+    <div id="stats-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl p-8 max-w-2xl w-full shadow-2xl">
+            <div class="flex justify-between mb-6">
+                <h3 class="text-xl font-bold">📈 Başarı Grafiği (%)</h3>
+                <button onclick="closeStats()" class="text-gray-400 hover:text-black text-2xl">✕</button>
             </div>
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-200">
-                <h3 class="text-xl font-bold text-gray-600 mb-4">📂 Geçmiş Haftalar Deposu</h3>
-                <div id="archive-list" class="h-60 overflow-y-auto space-y-3">
-                    <p class="text-gray-400 text-sm italic">Henüz arşivlenmiş bir hafta yok.</p>
-                </div>
-            </div>
+            <canvas id="performanceChart"></canvas>
+            <p class="text-xs text-center mt-4 text-gray-400 italic">Tik atma oranına göre haftalık verimlilik grafiği.</p>
         </div>
     </div>
 
     <script>
-        let weeklyHistory = [0, 0, 0, 0, 0, 0, 0]; // Grafik için veri
+        let archiveData = [];
 
-        function addTask(el) {
-            const existing = el.querySelector('.task-chip');
-            if (existing) {
-                if(confirm("Bu görevi silmek mi istiyorsun?")) existing.remove();
-                return;
-            }
-            const gorev = prompt("Görevi girin:");
+        function addTask(parent) {
+            const gorev = prompt("Öğrenciye görev tanımlayın:");
             if(gorev) {
-                const chip = document.createElement('div');
-                chip.className = "task-chip";
-                chip.innerText = gorev;
-                el.appendChild(chip);
-                confetti({ particleCount: 30, spread: 50, origin: { y: 0.8 } });
+                const item = document.createElement('div');
+                item.className = "task-item bg-white shadow-sm";
+                item.innerHTML = `<input type="checkbox" onchange="toggleDone(this)" class="w-3 h-3"> <span>${gorev}</span>`;
+                parent.appendChild(item);
                 updateAI();
             }
         }
 
-        function updateAI() {
-            const count = document.querySelectorAll('.task-chip').length;
-            const msg = document.getElementById('ai-message');
-            const status = document.getElementById('ai-status');
-
-            if(count > 0 && count < 5) {
-                msg.innerText = "Isınma turları başladı! Planına birkaç matematik konusu daha eklemeye ne dersin?";
-                status.innerText = "Mod: Başlangıç Seviyesi";
-            } else if(count >= 5 && count < 15) {
-                msg.innerText = "Harika bir tempodasın! Bu görevleri tamamlarsan haftalık hedefine ulaşırsın. Odaklanmaya devam!";
-                status.innerText = "Mod: Verimli Çalışma";
-            } else if(count >= 15) {
-                msg.innerText = "İşte gerçek bir şampiyon! Planın çok yoğun, mola vermeyi unutma. Matematik canavarı iş başında!";
-                status.innerText = "Mod: Yüksek Performans";
+        function toggleDone(cb) {
+            const parent = cb.parentElement;
+            if(cb.checked) {
+                parent.classList.add('done');
+                confetti({ particleCount: 40, spread: 70, origin: { y: 0.8 } });
+            } else {
+                parent.classList.remove('done');
             }
+            updateAI();
+        }
+
+        function updateAI() {
+            const total = document.querySelectorAll('input[type="checkbox"]').length;
+            const done = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            const msg = document.getElementById('ai-text');
+            
+            if(total === 0) return;
+            const ratio = (done / total) * 100;
+
+            if(ratio < 30) msg.innerText = "Henüz yolun başındayız. Küçük adımlarla başlayıp tempoyu artırmalıyız.";
+            else if(ratio < 70) msg.innerText = "Gayretin fark ediliyor! Planın yarısından fazlasını başardın, böyle devam.";
+            else msg.innerText = "Mükemmel performans! Tiklerin yeşilliği göz kamaştırıyor. Gerçek bir disiplin örneği!";
         }
 
         function archiveWeek() {
-            const count = document.querySelectorAll('.task-chip').length;
-            if(count === 0) return alert("Arşivlemek için en az bir görev olmalı!");
+            const total = document.querySelectorAll('input[type="checkbox"]').length;
+            const done = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            if(total === 0) return alert("Arşivlemek için plan oluşturun!");
 
+            const basari = Math.round((done / total) * 100);
             const tarih = new Date().toLocaleDateString();
-            const archiveList = document.getElementById('archive-list');
-            if(archiveList.querySelector('p')) archiveList.innerHTML = '';
-
+            
+            archiveData.push(basari);
+            
             const card = document.createElement('div');
-            card.className = "p-4 bg-green-50 border border-green-200 rounded-2xl flex justify-between items-center";
-            card.innerHTML = `<div><b class="text-green-800">${tarih} Haftası</b><br><small>${count} görev tamamlandı.</small></div> <span class="text-xl">🏆</span>`;
-            archiveList.prepend(card);
+            card.className = "bg-white p-4 rounded-2xl shadow-sm border border-gray-200 flex justify-between items-center";
+            card.innerHTML = `<div><p class="font-bold text-sm text-gray-700">${tarih} Haftası</p><p class="text-xs text-green-600 font-bold">%${basari} Başarı Oranı</p></div>
+                              <button onclick="this.parentElement.remove()" class="text-red-400 hover:text-red-600">🗑️</button>`;
+            document.getElementById('archive-list').prepend(card);
 
-            // Grafik verisini güncelle (Örnek rastgele gelişim)
-            weeklyHistory.shift();
-            weeklyHistory.push(count);
-
-            document.querySelectorAll('.task-chip').forEach(t => t.remove());
-            alert("Haftalık veriler başarıyla depoya kaldırıldı!");
+            document.querySelectorAll('.task-item').forEach(t => t.remove());
+            alert("Hafta arşive eklendi ve plan temizlendi.");
         }
 
         function showStats() {
             document.getElementById('stats-modal').classList.remove('hidden');
             const ctx = document.getElementById('performanceChart').getContext('2d');
-            
             if(window.myChart) window.myChart.destroy();
-            
             window.myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: ['4 Hafta Önce', '3 Hafta Önce', '2 Hafta Önce', 'Geçen Hafta', 'Bu Hafta'],
+                    labels: archiveData.map((_, i) => (i+1) + ". Hafta"),
                     datasets: [{
-                        label: 'Tamamlanan Görev Sayısı',
-                        data: [...weeklyHistory.slice(-5)],
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        label: 'Başarı Yüzdesi (%)',
+                        data: archiveData,
+                        borderColor: '#4f46e5',
+                        tension: 0.4,
                         fill: true,
-                        tension: 0.4
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)'
                     }]
-                },
-                options: { responsive: true, plugins: { legend: { display: false } } }
+                }
             });
         }
 
         function closeStats() { document.getElementById('stats-modal').classList.add('hidden'); }
 
-        const konular = ["Mantık", "Kümeler", "Denklemler", "Üçgenler", "Veri Analizi", "Fonksiyonlar", "Polinomlar", "Trigonometri", "Türev", "İntegral"];
-        const mList = document.getElementById('mufredat-list');
+        // MEB Müfredat Örneği
+        const konular = ["Mantık", "Kümeler", "Sayı Sistemleri", "Bölünebilme", "Üçgenler", "Denklemler", "Veri"];
         konular.forEach(k => {
             const d = document.createElement('div');
-            d.className = "p-3 bg-white border border-gray-100 rounded-xl cursor-pointer hover:bg-orange-50 flex justify-between text-sm font-medium";
-            d.innerHTML = `<span>${k}</span>`;
-            d.onclick = function() { 
-                this.classList.toggle('bg-orange-100');
-                this.classList.toggle('border-orange-400');
-            };
-            mList.appendChild(d);
+            d.className = "p-2 border rounded-lg cursor-pointer hover:bg-indigo-50";
+            d.innerText = k;
+            d.onclick = function() { this.classList.toggle('done'); };
+            document.getElementById('mufredat').appendChild(d);
         });
     </script>
 </body>
